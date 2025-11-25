@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year AI Persona</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* IMPORT ONEST FONT */
+        @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+
+        /* BRAND COLORS CONFIG */
+        :root {
+            --color-black: #000000;
+            --color-white: #ffffff;
+            --color-purple-main: #6008FA;
+            --color-blue: #127AFF;
+            --color-orange: #EE5519;
+            --color-green: #00E67B;
+            --color-purple-light: #9929EA;
+            --color-pink: #FD41A7;
+        }
+
+        body {
+            font-family: 'Onest', sans-serif;
+            background-color: var(--color-black);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(96, 8, 250, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(253, 65, 167, 0.15) 0%, transparent 40%);
+            min-height: 100vh;
+            color: var(--color-white);
+            overflow-x: hidden;
+        }
+
+        /* TYPOGRAPHY */
+        .title-display {
+            font-weight: 800; /* ExtraBold */
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            text-transform: uppercase; 
+        }
+
+        /* Glassmorphism card adapted for Black Theme */
+        .glass-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Snow animation - Updated to be infinite */
+        .snowflake {
+            position: absolute;
+            top: -20px;
+            color: white;
+            /* Changed 'forwards' to 'infinite' for continuous looping */
+            animation: fall linear infinite;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh);
+            }
+            100% {
+                transform: translateY(110vh);
+            }
+        }
+
+        .roulette-box {
+            min-height: 160px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(96, 8, 250, 0.3); /* Purple border */
+        }
+        
+        .shine-button {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        
+        .shine-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .shine-button:hover::after {
+            left: 100%;
+        }
+
+        .shine-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Confetti animation placeholder */
+        .confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 50;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Custom Gradients for Text/Buttons based on Brand Colors */
+        /* Updated gradient to match the uploaded image: Purple -> Blue -> Pink -> Orange */
+        .brand-gradient-text {
+            background: linear-gradient(90deg, #6008FA 0%, #127AFF 33%, #FD41A7 66%, #EE5519 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Fix for clipped last letter */
+            padding-right: 0.1em;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-purple-main) 0%, var(--color-purple-light) 100%);
+        }
+        
+        .btn-action-green {
+            background-color: var(--color-green);
+            color: black; /* Better contrast on bright green */
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Step pills */
+        .step-pill {
+            background: rgba(96, 8, 250, 0.2);
+            border: 1px solid rgba(96, 8, 250, 0.4);
+            color: #ccc;
+        }
+        .step-pill.active {
+            background: var(--color-blue);
+            border-color: var(--color-blue);
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center relative">
+
+    <!-- Background Elements -->
+    <div id="snow-container" class="fixed inset-0 pointer-events-none w-full h-full overflow-hidden"></div>
+
+    <!-- Main Container -->
+    <main class="container mx-auto px-4 py-8 relative z-10 max-w-2xl flex flex-col items-center">
+        
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <!-- Decorative Icon -->
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#6008FA]/20 mb-6 border border-[#6008FA]/40 shadow-[0_0_15px_rgba(96,8,250,0.3)] animate-pulse">
+                <!-- Replaced snowflake with Christmas Tree Emoji as requested -->
+                <span class="text-4xl">🎄</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl mb-3 title-display text-white tracking-tighter">
+                New Year <span class="brand-gradient-text">Persona</span>
+            </h1>
+            
+            <p class="text-gray-400 text-lg font-light tracking-wide max-w-md mx-auto">
+                Discover your AI holiday transformation
+            </p>
+        </header>
+
+        <!-- Interactive Card -->
+        <div class="glass-card w-full rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
+            
+            <!-- Brand Glow Blobs inside card -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#FD41A7] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#127AFF] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+
+            <!-- Steps Indicator -->
+            <div class="flex justify-center mb-8 gap-2 text-xs md:text-sm font-medium tracking-wide">
+                <span class="step-pill px-4 py-1.5 rounded-full">01 SPIN</span>
+                <span class="step-pill px-4 py-1.5 rounded-full">02 COPY</span>
+                <span class="step-pill px-4 py-1.5 rounded-full">03 GENERATE</span>
+            </div>
+
+            <!-- Roulette Display -->
+            <div class="roulette-box rounded-2xl flex items-center justify-center p-6 mb-8 text-center relative overflow-hidden">
+                <div id="result-area" class="text-2xl md:text-3xl font-semibold leading-snug text-white z-10">
+                    Who will you be tonight? <br>
+                    <span class="text-[#EE5519] text-lg font-normal mt-2 block">Spin to find out! 🎄</span>
+                </div>
+                <!-- Loading Spinner -->
+                <div id="loading-spinner" class="hidden absolute inset-0 flex items-center justify-center bg-black/80 z-20 backdrop-blur-sm">
+                    <i class="fas fa-circle-notch fa-spin text-5xl text-[#6008FA]"></i>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex flex-col gap-4">
+                <!-- Primary Spin Button -->
+                <button id="spin-btn" onclick="startRoulette()" class="shine-button btn-primary w-full py-5 rounded-xl text-white font-bold text-xl md:text-2xl tracking-tight shadow-lg border border-white/10 uppercase">
+                    <i class="fas fa-magic mr-2"></i> Reveal Persona
+                </button>
+
+                <!-- Action Buttons Container -->
+                <div id="action-buttons" class="hidden flex-col md:flex-row gap-4">
+                    
+                    <button id="copy-btn" onclick="copyPrompt()" class="btn-secondary flex-1 py-4 rounded-xl text-white font-semibold text-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-copy text-[#127AFF]"></i> Copy Prompt
+                    </button>
+                    
+                    <a id="link-btn" href="https://gemini.google.com/" target="_blank" class="btn-action-green shine-button flex-1 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(0,230,123,0.3)] transition flex items-center justify-center gap-2 uppercase">
+                        <i class="fas fa-rocket"></i> Go to Nano Banana
+                    </a>
+                </div>
+            </div>
+
+            <!-- Toast Notification -->
+            <div id="toast" class="absolute top-6 left-1/2 transform -translate-x-1/2 bg-[#00E67B] text-black font-bold px-6 py-3 rounded-full shadow-[0_4px_20px_rgba(0,230,123,0.4)] opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2 z-50 tracking-tight">
+                <i class="fas fa-check-circle"></i> Prompt Copied!
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-12 w-full max-w-lg">
+            <h3 class="text-xl font-bold mb-6 text-center text-white tracking-tight">HOW IT WORKS</h3>
+            <div class="glass-card p-6 rounded-2xl border-l-4 border-l-[#EE5519]">
+                <ol class="space-y-4 text-gray-300 text-sm md:text-base font-light">
+                    <li class="flex items-start gap-4">
+                        <span class="text-[#EE5519] font-bold text-xl">01</span>
+                        <span>Copy the generated prompt above.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-[#EE5519] font-bold text-xl">02</span>
+                        <span>Click <strong class="text-white">GO TO NANO BANANA</strong> and upload your photo.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-[#EE5519] font-bold text-xl">03</span>
+                        <span>Paste the prompt and hit "Generate".</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="text-[#EE5519] font-bold text-xl">04</span>
+                        <span>Share your <strong class="text-[#FD41A7]">look</strong> in the thread!</span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-gray-500 text-sm font-medium tracking-widest uppercase">
+            ✦ LET AI ADD MAGIC TO YOUR NEW YEAR ✦
+        </footer>
+
+    </main>
+
+    <script>
+        // --- DATA: Prompts List (60 VARIANTS) ---
+        const prompts = [
+            // 1-10
+            "A hyper-realistic portrait of the person dressed as a Cyberpunk Santa Claus, neon lights, futuristic armor, snowy Tokyo background, 8k resolution, cinematic lighting, magical New Year atmosphere.",
+            "The person as a wise Jedi Master holding a glowing sparkler like a lightsaber, snowy forest background, wearing heavy Jedi robes, Star Wars style, detailed face, festive New Year atmosphere.",
+            "The person as a magical Snow Elf, pointed ears, elegant silver armor, glowing blue eyes, magical winter forest background, fantasy art style, ethereal lighting, enchanting New Year atmosphere.",
+            "The person dressed as a cozy Gingerbread Man but wearing a business suit, sitting in a gingerbread office, 3d render style, cute and funny, warm Christmas atmosphere.",
+            "The person as the Grinch but wearing a tuxedo and holding a glass of champagne, mischievous smile, green fur texture, detailed, movie still, luxurious New Year party atmosphere.",
+            "The person as a Royal Ice King/Queen, wearing a crown made of icicles, fur cloak, sitting on a frozen throne, Game of Thrones style, dramatic lighting, majestic winter atmosphere.",
+            "The person as a 1980s Retro Ski Instructor, wearing bright neon pink and green ski suit, oversized goggles, retro VHS filter aesthetic, snowy mountain peak, fun holiday atmosphere.",
+            "The person as a Hobbit celebrating New Year in the Shire, holding a large mug of cocoa, fireworks in the background, cozy warm lighting, detailed texture, festive Middle-earth atmosphere.",
+            "The person as a futuristic robot celebrating New Year, metallic skin, LED lights blinking '2025', circuit board details, sci-fi background, high-tech holiday atmosphere.",
+            "The person as a Hogwarts student wearing a Gryffindor scarf, casting a Patronus charm that looks like a reindeer, magical atmosphere, Harry Potter movie style, festive Christmas at Hogwarts.",
+            
+            // 11-20
+            "The person as a Viking warrior celebrating Yule, fur furs, holding a horn of mead, snowy village background, fire light, rugged and epic, ancient New Year celebration atmosphere.",
+            "The person as a cute Pixar-style animated character, wearing a knitted ugly Christmas sweater, large expressive eyes, 3d animation style, bright colors, cozy holiday atmosphere.",
+            "The person as a Marvel Superhero, wearing a red and white superhero suit with snowflake emblem, heroic pose, New York City winter skyline background, epic New Year atmosphere.",
+            "The person as a noir detective in a snowy city, black and white photography style, wearing a fedora and trench coat, holding a candy cane like a cigarette, atmospheric winter mystery.",
+            "The person as a detailed oil painting of a 19th-century aristocrat in a winter coat, standing in front of a Winter Palace, snowy day, classic art style, elegant New Year ball atmosphere.",
+            "The person as a chaotic Minion from Despicable Me, wearing a Santa hat, yellow skin, funny goggles, holding a banana wrapped in gift paper, funny Christmas party atmosphere.",
+            "The person as an astronaut on Mars celebrating New Year, wearing a space suit decorated with tinsel, red planet background with snow, realistic sci-fi, cosmic holiday atmosphere.",
+            "The person as a Forest Spirit, antlers growing from head adorned with Christmas lights, mossy clothes, mystical fog, fantasy concept art, magical winter solstice atmosphere.",
+            "The person as a Lego minifigure version of themselves, standing in a Lego winter village, macro photography style, depth of field, playful New Year atmosphere.",
+            "The person wrapped entirely in Christmas lights like a mummy, only eyes visible, funny and chaotic situation, photorealistic, bright festive atmosphere.",
+
+            // 21-30
+            "The person as a futuristic Cyberpunk Samurai, katana made of ice, neon city in snow, high-tech armor, intense look, cinematic New Year atmosphere.",
+            "The person as a Steampunk Inventor in a workshop filled with clockwork toys, brass goggles, snowy window view, warm lighting, magical invention atmosphere.",
+            "The person as a 1920s Great Gatsby party goer, holding a sparkler, Art Deco background, golden confetti, elegant tuxedo/dress, roaring 20s New Year atmosphere.",
+            "The person as an Arctic Explorer under the Aurora Borealis, thick fur parka with frost, holding a lantern, husky dog nearby, majestic polar atmosphere.",
+            "The person as a 1970s Disco King/Queen, afro hair or retro style, sequin outfit reflecting disco ball lights, dance floor with confetti, funky New Year party atmosphere.",
+            "The person as a Secret Agent on a ski slope, tuxedo under ski jacket, holding a gadget, explosion of snow behind, action movie style, dynamic New Year atmosphere.",
+            "The person as a Fairy Godmother/Godfather, holding a magic wand transforming a pumpkin into a disco ball, sparkles everywhere, magical Disney style, enchanting atmosphere.",
+            "The person as the Mad Hatter at a Christmas Tea Party, top hat with price tag 10/6, snowy garden, drinking hot cocoa, colorful and eccentric, Alice in Wonderland style.",
+            "The person as a Pirate Captain on a frozen ship, beard with icicles (if male) or frosty hair, parrot wearing a Santa hat, epic ocean background, adventurous winter atmosphere.",
+            "The person as a Time Traveler stepping out of a machine into a snowy future, futuristic clothes mixed with victorian gear, swirling portal, sci-fi mystery atmosphere.",
+
+            // 31-40
+            "The person as a Greek God/Goddess on a snowy Mount Olympus, wearing white and gold robes, holding a golden goblet, glowing aura, divine New Year atmosphere.",
+            "The person as a Wild West Sheriff in a snowy frontier town, cowboy hat with snow, sheriff badge, warm saloon lights in background, western movie style.",
+            "The person as an Anime Magical Girl/Boy, transformation sequence with ribbons and stars, big eyes, sailor moon style outfit with winter theme, kawaii New Year atmosphere.",
+            "The person as a Deep Sea Diver discovering a sunken city decorated for Christmas, glowing jellyfish, bubbles, steampunk diving suit, underwater magical atmosphere.",
+            "The person as a Shining Paladin, silver armor reflecting fireworks, standing on a castle wall, cape blowing in wind, heroic fantasy style, epic New Year atmosphere.",
+            "The person as a Rock Star on stage at a New Year concert, electric guitar shooting sparks, crowd of thousands, stadium lights, energetic rock atmosphere.",
+            "The person as a Master Chef creating a life-sized gingerbread house, flour in the air like snow, chef hat, intense focus, warm kitchen lighting, delicious atmosphere.",
+            "The person as a character from The Matrix, wearing black sunglasses and trench coat, dodging snowballs in bullet time, digital green code rain turning into snowflakes, cool sci-fi atmosphere.",
+            "The person as an Egyptian Pharaoh but with snow falling on the Pyramids, golden jewelry, surreal and magical historical mashup, regal atmosphere.",
+            "The person as a friendly Alien Diplomat holding a peace offering of a Christmas gift, starry sky background, spaceship with festive lights, sci-fi hope atmosphere.",
+
+            // 41-50
+            "The person as a character in a Claymation movie (like Wallace & Gromit), plasticine texture, funny expression, wearing a knitted scarf, cozy stop-motion atmosphere.",
+            "The person as a Vampire in an elegant gothic castle, holding a glass of red punch, pale skin, velvet clothes, snowy courtyard view, mysterious winter atmosphere.",
+            "The person as a Dragon Rider soaring through a snowy sky, riding a white dragon, leather flight gear, clouds and mountain peaks, epic fantasy adventure.",
+            "The person as a Barbie/Ken doll in a box labeled 'New Year Edition', plastic texture, perfect smile, pink winter accessories, toy photography style.",
+            "The person as a Renaissance Painting subject (Mona Lisa style), mysterious smile, wearing a festive velvet robe, winter landscape background with faint fireworks, cracked oil paint texture, classic art New Year atmosphere.",
+            "The person as a cute Woodland creature (anthropomorphic raccoon or fox), wearing a sweater, drinking tea in a treehouse, illustration style, cozy Beatrix Potter atmosphere.",
+            "The person as a Video Game character in a pixel art world, 8-bit style, snowy level, health bar full, retro gaming nostalgia atmosphere.",
+            "The person as a Professional Wrestler (Luchador) wearing a festive mask, in a snowy wrestling ring, crowd cheering, dynamic pose, funny and energetic atmosphere.",
+            "The person as a Zen Monk meditating in a snowy garden, orange robes, peaceful expression, levitating slightly, magical spiritual atmosphere.",
+            "The person as a Cybernetic Hacker, typing on holographic keyboards, surrounded by blue screens and servers wrapped in festive tinsel and blinking LED Christmas lights. A small, decorated artificial Christmas tree sits on the desk next to empty energy drink cans. Reflections of neon holiday lights in their augmented reality glasses. High-tech winter city background with digital snow falling. Cyberpunk Christmas atmosphere.",
+
+            // 51-60 (5-Minute Crafts, 123 GO!, Avocado Couple)
+            "The person as a 5-Minute Crafts presenter holding a hot glue gun like a weapon, surrounded by DIY Christmas decorations made of plastic spoons and glitter, bright studio lighting, energetic New Year atmosphere.",
+            "The person mixing a giant bowl of festive red and green slime, wearing a lab coat and goggles, sparkles everywhere, 5-Minute Crafts style, fun and chaotic New Year atmosphere.",
+            "The person fixing a broken Christmas tree with duct tape and a glue gun, looking proud, 'Trust me, I'm an engineer' vibe, 5-Minute Crafts parody style, funny New Year situation.",
+            "The person as a 'Rich Student' in a 123 GO! video, wearing a luxurious gold outfit and sunglasses, holding a stack of cash and gifts, bright school hallway background decorated for Christmas, vivid colors.",
+            "The person hiding inside a giant Christmas present box to prank friends, mischievous expression, 123 GO! style, bright pink and blue colors, funny YouTube thumbnail aesthetic.",
+            "The person participating in a 'Red vs Green' food challenge for New Year, sitting at a table full of red and green festive treats, expressive face, bright YouTube lighting, fun atmosphere.",
+            "The person wearing a funny full-body giant avocado costume and a Santa hat, posing in a bright cartoon living room decorated for Christmas, Avocado Couple channel background style, joyful and silly New Year atmosphere.",
+            "The person wearing a festive ugly Christmas sweater with cute smiling avocados on it, holding a sparkler, bright cartoon winter landscape background, Avocado Couple channel art style, cozy and fun atmosphere.",
+            "The person wearing green avocado-themed pajamas and reindeer antlers, sitting under a cartoon Christmas tree, unwrapping gifts, bright flat cartoon background style, happy New Year vibe.",
+            "The person as a generic bright cartoon character from The Soul Publishing universe, big eyes, expressive face, holding a '2025' sign, colorful background with confetti, joyful New Year atmosphere.",
+
+            // 61 (New Cozy Sweater Prompt)
+            "The person, with the same facial features and hair as the provided image, sitting on the floor with legs crossed, smiling slightly and looking at the camera, holding a string of coiled Christmas lights in one hand and the other hand resting on the floor. Wearing a cream/off-white sweater with a Santa Claus and green/red snowflake pattern, white knitted pants, and red socks. Sitting on a fluffy white rug. In the background, a Christmas tree decorated with red, silver balls, and warm yellow lights, creating a soft glow effect. Cozy lighting, creating a warm and festive Christmas atmosphere.",
+
+            // 62-63 (Bright Side + Cats)
+            "The person wearing a funny yellow ugly Christmas sweater with the Bright Side lightbulb logo, holding a fluffy cat wrapped in tinsel, sitting in a cozy armchair by the fireplace, warm cinematic lighting, cute and funny New Year atmosphere.",
+            "The person and their cat both wearing matching festive sweaters (person's sweater has a Bright Side logo), the cat looks grumpy, the person is laughing, snowy window background, cozy home holiday vibe.",
+
+            // 64-65 (Bright Side + Dogs)
+            "The person wearing a festive sweater with a Bright Side logo, surrounded by three happy Golden Retrievers wearing reindeer antlers, sitting on a rug near a Christmas tree, joyful and chaotic New Year atmosphere.",
+            "The person holding a small puppy in a Santa hat, person wears a knitted sweater with the Bright Side logo and snowflakes, soft bokeh Christmas lights background, adorable and heartwarming holiday atmosphere.",
+
+            // 66-68 (New Funny Costumes: Snowman, Lightbulb, Chicken)
+            "The person wearing a funny, puffy white snowman costume with a red scarf and top hat, standing in a snowy park illuminated by Christmas lights, joyful and playful winter atmosphere.",
+            "The person dressed in a bright yellow lightbulb costume (inspired by the Bright Side mascot), posing with a 'thumbs up', glowing slightly, surrounded by festive confetti and sparkles, energetic and smart New Year atmosphere.",
+            "The person wearing a hilarious crispy fried chicken costume, holding a sparkler, standing against a bright festive background, referencing funny food challenges, humorous and happy New Year atmosphere."
+        ];
+
+        // English titles for the UI (68 VARIANTS)
+        const displayTitles = [
+            // 1-10
+            "Cyberpunk Santa", "Jedi with Sparkler", "Snow Elf", "Business Gingerbread", 
+            "Grinch in Tuxedo", "Ice King/Queen", "Retro 80s Skier", "Hobbit Party", 
+            "Futuristic Robot", "Hogwarts Student",
+            // 11-20
+            "Viking Yule", "Pixar Character", "Marvel Hero", "Noir Detective", 
+            "Winter Aristocrat", "Christmas Minion", "Mars Astronaut", "Forest Spirit", 
+            "Lego Figure", "Christmas Lights Mummy",
+            // 21-30
+            "Cyberpunk Samurai", "Steampunk Inventor", "Gatsby Party Star", "Arctic Explorer",
+            "Disco Legend", "Secret Agent 007", "Fairy Godmother/Father", "Mad Hatter",
+            "Frozen Pirate", "Time Traveler",
+            // 31-40
+            "Greek Deity", "Snowy Sheriff", "Anime Magical Hero", "Deep Sea Diver",
+            "Shining Paladin", "Rock Star", "Master Chef", "Matrix Hero",
+            "Winter Pharaoh", "Alien Diplomat",
+            // 41-50
+            "Claymation Star", "Gothic Vampire", "Dragon Rider", "New Year Doll",
+            "Renaissance Masterpiece", "Cozy Woodland Creature", "8-Bit Hero", "Lucha Libre Star",
+            "Zen Master", "Cyber Hacker",
+            // 51-60
+            "DIY Master with Glue Gun", "Festive Slime Expert", "Ultimate Life Hacker", "Rich Student 123 GO!",
+            "Christmas Prankster", "Red vs Green Challenge", "Avocado Costume Party", "Avocado Ugly Sweater",
+            "Avocado Pajamas", "Soul Pub Cartoon Star",
+            // 61
+            "Cozy Christmas Sweaters",
+            // 62-65
+            "Bright Side Cat & Sweater", "Matching Cat Sweaters", "Bright Side Dog Party", "Bright Side Puppy Love",
+            // 66-68
+            "Funny Snowman", "Bright Side Mascot", "Fried Chicken Party"
+        ];
+
+        // Brand Colors for Confetti
+        const brandColors = ['#6008FA', '#127AFF', '#EE5519', '#00E67B', '#9929EA', '#FD41A7', '#FFFFFF'];
+
+        let isSpinning = false;
+        const resultArea = document.getElementById('result-area');
+        const spinBtn = document.getElementById('spin-btn');
+        const actionButtons = document.getElementById('action-buttons');
+        let currentPromptText = "";
+
+        // --- Logic: Snowflake Generation ---
+        function createSnowflakes() {
+            const container = document.getElementById('snow-container');
+            const snowflakeCount = 40;
+
+            for (let i = 0; i < snowflakeCount; i++) {
+                const flake = document.createElement('i');
+                flake.classList.add('fas', 'fa-snowflake', 'snowflake');
+                
+                // Randomize properties
+                const size = Math.random() * 12 + 4 + 'px';
+                const left = Math.random() * 100 + 'vw';
+                const duration = Math.random() * 5 + 8 + 's';
+                const delay = Math.random() * 5 + 's';
+                
+                flake.style.fontSize = size;
+                flake.style.left = left;
+                flake.style.animationDuration = duration;
+                flake.style.animationDelay = delay;
+                flake.style.opacity = Math.random() * 0.3 + 0.1; // Fainter snowflakes
+                
+                container.appendChild(flake);
+            }
+        }
+
+        // --- Logic: Confetti ---
+        function fireConfetti() {
+            for(let i=0; i<40; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + 'vw';
+                // USE BRAND COLORS
+                conf.style.backgroundColor = brandColors[Math.floor(Math.random() * brandColors.length)];
+                
+                // Random shape (sometimes square, sometimes round)
+                if (Math.random() > 0.5) conf.style.borderRadius = '50%';
+                
+                conf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                document.body.appendChild(conf);
+                
+                setTimeout(() => conf.remove(), 3500);
+            }
+        }
+
+        // --- Logic: Roulette ---
+        function startRoulette() {
+            if (isSpinning) return;
+            isSpinning = true;
+            
+            // UI Update
+            spinBtn.disabled = true;
+            spinBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            // Hide action buttons
+            actionButtons.classList.remove('flex');
+            actionButtons.classList.add('hidden');
+            
+            resultArea.innerHTML = '<span class="text-gray-400">Searching the multiverse...</span>';
+
+            let counter = 0;
+            const maxSpins = 25; 
+            let speed = 40; 
+
+            // Interactive loop
+            const spinInterval = () => {
+                const randomIdx = Math.floor(Math.random() * displayTitles.length);
+                // Use brand colors for spinning text
+                const randomColor = brandColors[Math.floor(Math.random() * (brandColors.length - 1))]; // exclude white mostly
+                
+                resultArea.innerHTML = `
+                    <div style="color: ${randomColor}" class="text-3xl font-bold tracking-tight">
+                        ${displayTitles[randomIdx]}
+                    </div>
+                `;
+                
+                counter++;
+                
+                if (counter < maxSpins) {
+                    speed += 5; // Slow down slightly
+                    setTimeout(spinInterval, speed);
+                } else {
+                    finishSpin();
+                }
+            };
+
+            spinInterval();
+        }
+
+        function finishSpin() {
+            const finalIndex = Math.floor(Math.random() * prompts.length);
+            currentPromptText = prompts[finalIndex];
+            const displayTitle = displayTitles[finalIndex];
+
+            // UI Reveal
+            resultArea.innerHTML = `
+                <div class="animate-bounce mb-3 text-4xl">🎁</div>
+                <div class="text-[#127AFF] text-xs font-bold uppercase tracking-widest mb-2">Your Persona:</div>
+                <div class="font-bold text-3xl md:text-4xl text-white mb-2 leading-tight uppercase brand-gradient-text drop-shadow-lg">
+                    ${displayTitle}
+                </div>
+            `;
+
+            fireConfetti();
+            
+            // Reset buttons
+            isSpinning = false;
+            spinBtn.disabled = false;
+            spinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            spinBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Try Again';
+            
+            // Show action buttons
+            actionButtons.classList.remove('hidden');
+            actionButtons.classList.add('flex', 'animate-pulse');
+            setTimeout(() => actionButtons.classList.remove('animate-pulse'), 1000);
+        }
+
+        // --- Logic: Copy to Clipboard ---
+        function copyPrompt() {
+            if (!currentPromptText) return;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = currentPromptText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                alert("Could not copy automatically. Please copy the text manually.");
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, 0)';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 20px)';
+            }, 2000);
+        }
+
+        // Init
+        createSnowflakes();
+
+    </script>
+</body>
+</html>
