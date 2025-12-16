@@ -55,7 +55,6 @@
             position: absolute;
             top: -20px;
             color: white;
-            /* Changed 'forwards' to 'infinite' for continuous looping */
             animation: fall linear infinite;
             z-index: 0;
             opacity: 0.4;
@@ -117,12 +116,10 @@
         }
 
         /* Custom Gradients for Text/Buttons based on Brand Colors */
-        /* Updated gradient to match the uploaded image: Purple -> Blue -> Pink -> Orange */
         .brand-gradient-text {
             background: linear-gradient(90deg, #6008FA 0%, #127AFF 33%, #FD41A7 66%, #EE5519 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            /* Fix for clipped last letter */
             padding-right: 0.1em;
             display: inline-block;
         }
@@ -133,7 +130,12 @@
         
         .btn-action-green {
             background-color: var(--color-green);
-            color: black; /* Better contrast on bright green */
+            color: black;
+        }
+
+        .btn-action-blue {
+            background-color: var(--color-blue);
+            color: white;
         }
 
         .btn-secondary {
@@ -171,7 +173,6 @@
         <header class="text-center mb-10">
             <!-- Decorative Icon -->
             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#6008FA]/20 mb-6 border border-[#6008FA]/40 shadow-[0_0_15px_rgba(96,8,250,0.3)] animate-pulse">
-                <!-- Replaced snowflake with Christmas Tree Emoji as requested -->
                 <span class="text-4xl">🎄</span>
             </div>
             
@@ -218,15 +219,21 @@
                 </button>
 
                 <!-- Action Buttons Container -->
-                <div id="action-buttons" class="hidden flex-col md:flex-row gap-4">
+                <div id="action-buttons" class="hidden flex-col gap-3">
                     
-                    <button id="copy-btn" onclick="copyPrompt()" class="btn-secondary flex-1 py-4 rounded-xl text-white font-semibold text-lg transition flex items-center justify-center gap-2">
+                    <button id="copy-btn" onclick="copyPrompt()" class="btn-secondary w-full py-4 rounded-xl text-white font-semibold text-lg transition flex items-center justify-center gap-2">
                         <i class="fas fa-copy text-[#127AFF]"></i> Copy Prompt
                     </button>
                     
-                    <a id="link-btn" href="https://gemini.google.com/" target="_blank" class="btn-action-green shine-button flex-1 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(0,230,123,0.3)] transition flex items-center justify-center gap-2 uppercase">
-                        <i class="fas fa-rocket"></i> Go to Nano Banana
-                    </a>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                        <a id="link-nano" href="https://gemini.google.com/" target="_blank" class="btn-action-green shine-button py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(0,230,123,0.3)] transition flex items-center justify-center gap-2 uppercase">
+                            <i class="fas fa-rocket"></i> Go to Nano Banana
+                        </a>
+                        
+                        <a id="link-gpt" href="https://chatgpt.com/" target="_blank" class="btn-action-blue shine-button py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(18,122,255,0.3)] transition flex items-center justify-center gap-2 uppercase">
+                            <i class="fas fa-robot"></i> Go to ChatGPT
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -247,11 +254,11 @@
                     </li>
                     <li class="flex items-start gap-4">
                         <span class="text-[#EE5519] font-bold text-xl">02</span>
-                        <span>Click <strong class="text-white">GO TO NANO BANANA</strong> and upload your photo.</span>
+                        <span>Open <strong class="text-white">Nano Banana</strong> or <strong class="text-white">ChatGPT</strong> using the buttons.</span>
                     </li>
                     <li class="flex items-start gap-4">
                         <span class="text-[#EE5519] font-bold text-xl">03</span>
-                        <span>Paste the prompt and hit "Generate".</span>
+                        <span>Upload your photo and paste the prompt to generate.</span>
                     </li>
                     <li class="flex items-start gap-4">
                         <span class="text-[#EE5519] font-bold text-xl">04</span>
@@ -268,7 +275,7 @@
     </main>
 
     <script>
-        // --- DATA: Prompts List (60 VARIANTS) ---
+        // --- DATA: Prompts List (68 VARIANTS) ---
         const prompts = [
             // 1-10
             "A hyper-realistic portrait of the person dressed as a Cyberpunk Santa Claus, neon lights, futuristic armor, snowy Tokyo background, 8k resolution, cinematic lighting, magical New Year atmosphere.",
@@ -345,15 +352,13 @@
             // 61 (New Cozy Sweater Prompt)
             "The person, with the same facial features and hair as the provided image, sitting on the floor with legs crossed, smiling slightly and looking at the camera, holding a string of coiled Christmas lights in one hand and the other hand resting on the floor. Wearing a cream/off-white sweater with a Santa Claus and green/red snowflake pattern, white knitted pants, and red socks. Sitting on a fluffy white rug. In the background, a Christmas tree decorated with red, silver balls, and warm yellow lights, creating a soft glow effect. Cozy lighting, creating a warm and festive Christmas atmosphere.",
 
-            // 62-63 (Bright Side + Cats)
+            // 62-65 (Bright Side + Cats/Dogs)
             "The person wearing a funny yellow ugly Christmas sweater with the Bright Side lightbulb logo, holding a fluffy cat wrapped in tinsel, sitting in a cozy armchair by the fireplace, warm cinematic lighting, cute and funny New Year atmosphere.",
             "The person and their cat both wearing matching festive sweaters (person's sweater has a Bright Side logo), the cat looks grumpy, the person is laughing, snowy window background, cozy home holiday vibe.",
-
-            // 64-65 (Bright Side + Dogs)
             "The person wearing a festive sweater with a Bright Side logo, surrounded by three happy Golden Retrievers wearing reindeer antlers, sitting on a rug near a Christmas tree, joyful and chaotic New Year atmosphere.",
             "The person holding a small puppy in a Santa hat, person wears a knitted sweater with the Bright Side logo and snowflakes, soft bokeh Christmas lights background, adorable and heartwarming holiday atmosphere.",
 
-            // 66-68 (New Funny Costumes: Snowman, Lightbulb, Chicken)
+            // 66-68 (Funny Costumes)
             "The person wearing a funny, puffy white snowman costume with a red scarf and top hat, standing in a snowy park illuminated by Christmas lights, joyful and playful winter atmosphere.",
             "The person dressed in a bright yellow lightbulb costume (inspired by the Bright Side mascot), posing with a 'thumbs up', glowing slightly, surrounded by festive confetti and sparkles, energetic and smart New Year atmosphere.",
             "The person wearing a hilarious crispy fried chicken costume, holding a sparkler, standing against a bright festive background, referencing funny food challenges, humorous and happy New Year atmosphere."
