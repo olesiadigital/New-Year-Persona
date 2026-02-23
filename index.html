@@ -3,560 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year AI Persona</title>
+    <title>Prompt Architect</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        /* IMPORT ONEST FONT */
-        @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
-
-        /* BRAND COLORS CONFIG */
-        :root {
-            --color-black: #000000;
-            --color-white: #ffffff;
-            --color-purple-main: #6008FA;
-            --color-blue: #127AFF;
-            --color-orange: #EE5519;
-            --color-green: #00E67B;
-            --color-purple-light: #9929EA;
-            --color-pink: #FD41A7;
-        }
-
-        body {
-            font-family: 'Onest', sans-serif;
-            background-color: var(--color-black);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(96, 8, 250, 0.25) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(253, 65, 167, 0.15) 0%, transparent 40%);
-            min-height: 100vh;
-            color: var(--color-white);
-            overflow-x: hidden;
-        }
-
-        /* TYPOGRAPHY */
-        .title-display {
-            font-weight: 800; /* ExtraBold */
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            text-transform: uppercase; 
-        }
-
-        /* Glassmorphism card adapted for Black Theme */
-        .glass-card {
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Snow animation - Updated to be infinite */
-        .snowflake {
-            position: absolute;
-            top: -20px;
-            color: white;
-            animation: fall linear infinite;
-            z-index: 0;
-            opacity: 0.4;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh);
-            }
-            100% {
-                transform: translateY(110vh);
-            }
-        }
-
-        .roulette-box {
-            min-height: 160px;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(96, 8, 250, 0.3); /* Purple border */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        .aspect-card {
+            aspect-ratio: 2528 / 1696;
         }
         
-        .shine-button {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-        
-        .shine-button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .shine-button:hover::after {
-            left: 100%;
+        .card-shadow {
+            box-shadow: 0 10px 40px -15px rgba(0, 0, 0, 0.7);
         }
 
-        .shine-button:active {
-            transform: scale(0.98);
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Confetti animation placeholder */
-        .confetti {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            animation: confetti-fall 3s linear forwards;
-            z-index: 50;
-        }
-        
-        @keyframes confetti-fall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-
-        /* Custom Gradients for Text/Buttons based on Brand Colors */
-        .brand-gradient-text {
-            background: linear-gradient(90deg, #6008FA 0%, #127AFF 33%, #FD41A7 66%, #EE5519 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            padding-right: 0.1em;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--color-purple-main) 0%, var(--color-purple-light) 100%);
-        }
-        
-        .btn-action-green {
-            background-color: var(--color-green);
-            color: black;
-        }
-
-        .btn-action-blue {
-            background-color: var(--color-blue);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Step pills */
-        .step-pill {
-            background: rgba(96, 8, 250, 0.2);
-            border: 1px solid rgba(96, 8, 250, 0.4);
-            color: #ccc;
-        }
-        .step-pill.active {
-            background: var(--color-blue);
-            border-color: var(--color-blue);
-            color: white;
-            font-weight: bold;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center relative">
+<body class="text-slate-100 min-h-screen">
+    <div id="root"></div>
 
-    <!-- Background Elements -->
-    <div id="snow-container" class="fixed inset-0 pointer-events-none w-full h-full overflow-hidden"></div>
+    <script type="text/babel">
+        const { useState } = React;
 
-    <!-- Main Container -->
-    <main class="container mx-auto px-4 py-8 relative z-10 max-w-2xl flex flex-col items-center">
-        
-        <!-- Header -->
-        <header class="text-center mb-10">
-            <!-- Decorative Icon -->
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#6008FA]/20 mb-6 border border-[#6008FA]/40 shadow-[0_0_15px_rgba(96,8,250,0.3)] animate-pulse">
-                <span class="text-4xl">🎄</span>
-            </div>
-            
-            <h1 class="text-4xl md:text-6xl mb-3 title-display text-white tracking-tighter">
-                New Year <span class="brand-gradient-text">Persona</span>
-            </h1>
-            
-            <p class="text-gray-400 text-lg font-light tracking-wide max-w-md mx-auto">
-                Discover your AI holiday transformation
-            </p>
-        </header>
+        const CACHE_VERSION = 2;
 
-        <!-- Interactive Card -->
-        <div class="glass-card w-full rounded-[2rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
-            
-            <!-- Brand Glow Blobs inside card -->
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#FD41A7] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#127AFF] rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
+        // Встроенные SVG иконки
+        const Icons = {
+            Refresh: () => (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+            ),
+            Sparkles: () => (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+            ),
+            Copy: () => (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            ),
+            Check: () => (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ),
+            Wand: () => (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3-3"/><path d="m17 2 4 4"/><path d="m19 9 3-3"/><path d="m13 1 3 3"/><path d="m11 7 3-3"/></svg>
+            ),
+            Type: () => (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+            ),
+            External: () => (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+            ),
+            Message: () => (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            ),
+            Info: () => (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+            )
+        };
 
-            <!-- Steps Indicator -->
-            <div class="flex justify-center mb-8 gap-2 text-xs md:text-sm font-medium tracking-wide">
-                <span class="step-pill px-4 py-1.5 rounded-full">01 SPIN</span>
-                <span class="step-pill px-4 py-1.5 rounded-full">02 COPY</span>
-                <span class="step-pill px-4 py-1.5 rounded-full">03 GENERATE</span>
-            </div>
+        const App = () => {
+            const [selectedTemplate, setSelectedTemplate] = useState(null);
+            const [isInputVisible, setIsInputVisible] = useState(false);
+            const [userText, setUserText] = useState('');
+            const [prompts, setPrompts] = useState({ gemini: '', generic: '' });
+            const [copiedType, setCopiedType] = useState(null);
+            const [failedImages, setFailedImages] = useState({});
 
-            <!-- Roulette Display -->
-            <div class="roulette-box rounded-2xl flex items-center justify-center p-6 mb-8 text-center relative overflow-hidden">
-                <div id="result-area" class="text-2xl md:text-3xl font-semibold leading-snug text-white z-10">
-                    Who will you be tonight? <br>
-                    <span class="text-[#EE5519] text-lg font-normal mt-2 block">Spin to find out! 🎄</span>
-                </div>
-                <!-- Loading Spinner -->
-                <div id="loading-spinner" class="hidden absolute inset-0 flex items-center justify-center bg-black/80 z-20 backdrop-blur-sm">
-                    <i class="fas fa-circle-notch fa-spin text-5xl text-[#6008FA]"></i>
-                </div>
-            </div>
+            const templates = [
+                { id: 1, name: 'Risograph Story', color: '#ff007f', image: `./images/risograph.jpeg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on a light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: A vibrant risograph-style illustration. Use bold neon and fluorescent colors like hot pink, bright orange, electric blue, and lime green. Include textures and layering typical of risograph printing, with slight misalignment and grainy ink effects. Artistic, graphic, and pop-art inspired.\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 2, name: 'Bright Watercolor', color: '#f59e0b', image: `./images/watercolor-bright.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on a light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: colorful bright watercolor style\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 3, name: 'Pastel Watercolor', color: '#7dd3fc', image: `./images/watercolor-pastel.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on a light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: soft pastel watercolor style\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 4, name: 'Flat Pastel', color: '#6ee7b7', image: `./images/flat-pastel.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: flat design, simple shapes, pastel colors\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 5, name: 'Flat Bright', color: '#fb923c', image: `./images/flat-bright.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with a dynamic pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: flat design, colorful bright colors\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 6, name: 'Cartoon Pattern', color: '#a78bfa', image: `./images/cartoon-pattern.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with pattern that matches the text's meaning, the image should not contain large block illustrations, only the pattern\n\nText: ${t}\n\nIllustration style: Cartoon illustration with bright, rich colors and simplified yet expressive shapes\nColors: the colors are pure, positive, saturated, do not use dark black and gloomy colors\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 7, name: 'Hand Sketch', color: '#94a3b8', image: `./images/hand-sketch.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: hand sketch with elements of contour illustration (Line Art)\nColors: the colors are pure, positive, saturated, do not use dark black and gloomy colors\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 8, name: 'Mesh Gradient', color: '#6366f1', image: `./images/mesh-gradient.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with a pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: digital illustrations. The style features soft, meshy gradients with a smooth airbrushed look, blending vibrant colors. The image has slight motion blur and depth, with sculpted shadows and soft transitions. Set against a flat bright background. The overall vibe is playful, energetic, and modern, with a semi-3D, plasticky texture reminiscent of mesh gradient illustrations\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` },
+                { id: 9, name: 'Sticker Style', color: '#f43f5e', image: `./images/sticker-style.jpg?v=${CACHE_VERSION}`, body: (t) => `Design type: preview with story\n\nComposition: Place the text on light background, surround the text with a dynamic pattern that matches the text's meaning:\n\nText: ${t}\n\nIllustration style: sticker style\n\nColors: the colors are pure, positive, saturated, do not use dark black and gloomy colors\n\nThe image should not contain: money and currency symbols, alcohol bottles and glasses, medical elements, scenes of violence, unnecessary text, or individual words.` }
+            ];
 
-            <!-- Controls -->
-            <div class="flex flex-col gap-4">
-                <!-- Primary Spin Button -->
-                <button id="spin-btn" onclick="startRoulette()" class="shine-button btn-primary w-full py-5 rounded-xl text-white font-bold text-xl md:text-2xl tracking-tight shadow-lg border border-white/10 uppercase">
-                    <i class="fas fa-magic mr-2"></i> Reveal Persona
-                </button>
-
-                <!-- Action Buttons Container -->
-                <div id="action-buttons" class="hidden flex-col gap-3">
-                    
-                    <button id="copy-btn" onclick="copyPrompt()" class="btn-secondary w-full py-4 rounded-xl text-white font-semibold text-lg transition flex items-center justify-center gap-2">
-                        <i class="fas fa-copy text-[#127AFF]"></i> Copy Prompt
-                    </button>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-                        <a id="link-nano" href="https://gemini.google.com/" target="_blank" class="btn-action-green shine-button py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(0,230,123,0.3)] transition flex items-center justify-center gap-2 uppercase">
-                            <i class="fas fa-rocket"></i> Go to Nano Banana
-                        </a>
-                        
-                        <a id="link-gpt" href="https://chatgpt.com/" target="_blank" class="btn-action-blue shine-button py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(18,122,255,0.3)] transition flex items-center justify-center gap-2 uppercase">
-                            <i class="fas fa-robot"></i> Go to ChatGPT
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toast Notification -->
-            <div id="toast" class="absolute top-6 left-1/2 transform -translate-x-1/2 bg-[#00E67B] text-black font-bold px-6 py-3 rounded-full shadow-[0_4px_20px_rgba(0,230,123,0.4)] opacity-0 transition-opacity duration-300 pointer-events-none flex items-center gap-2 z-50 tracking-tight">
-                <i class="fas fa-check-circle"></i> Prompt Copied!
-            </div>
-        </div>
-
-        <!-- Instructions -->
-        <div class="mt-12 w-full max-w-lg">
-            <h3 class="text-xl font-bold mb-6 text-center text-white tracking-tight">HOW IT WORKS</h3>
-            <div class="glass-card p-6 rounded-2xl border-l-4 border-l-[#EE5519]">
-                <ol class="space-y-4 text-gray-300 text-sm md:text-base font-light">
-                    <li class="flex items-start gap-4">
-                        <span class="text-[#EE5519] font-bold text-xl">01</span>
-                        <span>Copy the generated prompt above.</span>
-                    </li>
-                    <li class="flex items-start gap-4">
-                        <span class="text-[#EE5519] font-bold text-xl">02</span>
-                        <span>Open <strong class="text-white">Nano Banana</strong> or <strong class="text-white">ChatGPT</strong> using the buttons.</span>
-                    </li>
-                    <li class="flex items-start gap-4">
-                        <span class="text-[#EE5519] font-bold text-xl">03</span>
-                        <span>Upload your photo and paste the prompt to generate.</span>
-                    </li>
-                    <li class="flex items-start gap-4">
-                        <span class="text-[#EE5519] font-bold text-xl">04</span>
-                        <span>Share your <strong class="text-[#FD41A7]">look</strong> in the thread!</span>
-                    </li>
-                </ol>
-            </div>
-        </div>
-
-        <footer class="mt-12 text-gray-500 text-sm font-medium tracking-widest uppercase">
-            ✦ LET AI ADD MAGIC TO YOUR NEW YEAR ✦
-        </footer>
-
-    </main>
-
-    <script>
-        // --- DATA: Prompts List (68 VARIANTS) ---
-        const prompts = [
-            // 1-10
-            "A hyper-realistic portrait of the person dressed as a Cyberpunk Santa Claus, neon lights, futuristic armor, snowy Tokyo background, 8k resolution, cinematic lighting, magical New Year atmosphere.",
-            "The person as a wise Jedi Master holding a glowing sparkler like a lightsaber, snowy forest background, wearing heavy Jedi robes, Star Wars style, detailed face, festive New Year atmosphere.",
-            "The person as a magical Snow Elf, pointed ears, elegant silver armor, glowing blue eyes, magical winter forest background, fantasy art style, ethereal lighting, enchanting New Year atmosphere.",
-            "The person dressed as a cozy Gingerbread Man but wearing a business suit, sitting in a gingerbread office, 3d render style, cute and funny, warm Christmas atmosphere.",
-            "The person as the Grinch but wearing a tuxedo and holding a glass of champagne, mischievous smile, green fur texture, detailed, movie still, luxurious New Year party atmosphere.",
-            "The person as a Royal Ice King/Queen, wearing a crown made of icicles, fur cloak, sitting on a frozen throne, Game of Thrones style, dramatic lighting, majestic winter atmosphere.",
-            "The person as a 1980s Retro Ski Instructor, wearing bright neon pink and green ski suit, oversized goggles, retro VHS filter aesthetic, snowy mountain peak, fun holiday atmosphere.",
-            "The person as a Hobbit celebrating New Year in the Shire, holding a large mug of cocoa, fireworks in the background, cozy warm lighting, detailed texture, festive Middle-earth atmosphere.",
-            "The person as a futuristic robot celebrating New Year, metallic skin, LED lights blinking '2025', circuit board details, sci-fi background, high-tech holiday atmosphere.",
-            "The person as a Hogwarts student wearing a Gryffindor scarf, casting a Patronus charm that looks like a reindeer, magical atmosphere, Harry Potter movie style, festive Christmas at Hogwarts.",
-            
-            // 11-20
-            "The person as a Viking warrior celebrating Yule, fur furs, holding a horn of mead, snowy village background, fire light, rugged and epic, ancient New Year celebration atmosphere.",
-            "The person as a cute Pixar-style animated character, wearing a knitted ugly Christmas sweater, large expressive eyes, 3d animation style, bright colors, cozy holiday atmosphere.",
-            "The person as a Marvel Superhero, wearing a red and white superhero suit with snowflake emblem, heroic pose, New York City winter skyline background, epic New Year atmosphere.",
-            "The person as a noir detective in a snowy city, black and white photography style, wearing a fedora and trench coat, holding a candy cane like a cigarette, atmospheric winter mystery.",
-            "The person as a detailed oil painting of a 19th-century aristocrat in a winter coat, standing in front of a Winter Palace, snowy day, classic art style, elegant New Year ball atmosphere.",
-            "The person as a chaotic Minion from Despicable Me, wearing a Santa hat, yellow skin, funny goggles, holding a banana wrapped in gift paper, funny Christmas party atmosphere.",
-            "The person as an astronaut on Mars celebrating New Year, wearing a space suit decorated with tinsel, red planet background with snow, realistic sci-fi, cosmic holiday atmosphere.",
-            "The person as a Forest Spirit, antlers growing from head adorned with Christmas lights, mossy clothes, mystical fog, fantasy concept art, magical winter solstice atmosphere.",
-            "The person as a Lego minifigure version of themselves, standing in a Lego winter village, macro photography style, depth of field, playful New Year atmosphere.",
-            "The person wrapped entirely in Christmas lights like a mummy, only eyes visible, funny and chaotic situation, photorealistic, bright festive atmosphere.",
-
-            // 21-30
-            "The person as a futuristic Cyberpunk Samurai, katana made of ice, neon city in snow, high-tech armor, intense look, cinematic New Year atmosphere.",
-            "The person as a Steampunk Inventor in a workshop filled with clockwork toys, brass goggles, snowy window view, warm lighting, magical invention atmosphere.",
-            "The person as a 1920s Great Gatsby party goer, holding a sparkler, Art Deco background, golden confetti, elegant tuxedo/dress, roaring 20s New Year atmosphere.",
-            "The person as an Arctic Explorer under the Aurora Borealis, thick fur parka with frost, holding a lantern, husky dog nearby, majestic polar atmosphere.",
-            "The person as a 1970s Disco King/Queen, afro hair or retro style, sequin outfit reflecting disco ball lights, dance floor with confetti, funky New Year party atmosphere.",
-            "The person as a Secret Agent on a ski slope, tuxedo under ski jacket, holding a gadget, explosion of snow behind, action movie style, dynamic New Year atmosphere.",
-            "The person as a Fairy Godmother/Godfather, holding a magic wand transforming a pumpkin into a disco ball, sparkles everywhere, magical Disney style, enchanting atmosphere.",
-            "The person as the Mad Hatter at a Christmas Tea Party, top hat with price tag 10/6, snowy garden, drinking hot cocoa, colorful and eccentric, Alice in Wonderland style.",
-            "The person as a Pirate Captain on a frozen ship, beard with icicles (if male) or frosty hair, parrot wearing a Santa hat, epic ocean background, adventurous winter atmosphere.",
-            "The person as a Time Traveler stepping out of a machine into a snowy future, futuristic clothes mixed with victorian gear, swirling portal, sci-fi mystery atmosphere.",
-
-            // 31-40
-            "The person as a Greek God/Goddess on a snowy Mount Olympus, wearing white and gold robes, holding a golden goblet, glowing aura, divine New Year atmosphere.",
-            "The person as a Wild West Sheriff in a snowy frontier town, cowboy hat with snow, sheriff badge, warm saloon lights in background, western movie style.",
-            "The person as an Anime Magical Girl/Boy, transformation sequence with ribbons and stars, big eyes, sailor moon style outfit with winter theme, kawaii New Year atmosphere.",
-            "The person as a Deep Sea Diver discovering a sunken city decorated for Christmas, glowing jellyfish, bubbles, steampunk diving suit, underwater magical atmosphere.",
-            "The person as a Shining Paladin, silver armor reflecting fireworks, standing on a castle wall, cape blowing in wind, heroic fantasy style, epic New Year atmosphere.",
-            "The person as a Rock Star on stage at a New Year concert, electric guitar shooting sparks, crowd of thousands, stadium lights, energetic rock atmosphere.",
-            "The person as a Master Chef creating a life-sized gingerbread house, flour in the air like snow, chef hat, intense focus, warm kitchen lighting, delicious atmosphere.",
-            "The person as a character from The Matrix, wearing black sunglasses and trench coat, dodging snowballs in bullet time, digital green code rain turning into snowflakes, cool sci-fi atmosphere.",
-            "The person as an Egyptian Pharaoh but with snow falling on the Pyramids, golden jewelry, surreal and magical historical mashup, regal atmosphere.",
-            "The person as a friendly Alien Diplomat holding a peace offering of a Christmas gift, starry sky background, spaceship with festive lights, sci-fi hope atmosphere.",
-
-            // 41-50
-            "The person as a character in a Claymation movie (like Wallace & Gromit), plasticine texture, funny expression, wearing a knitted scarf, cozy stop-motion atmosphere.",
-            "The person as a Vampire in an elegant gothic castle, holding a glass of red punch, pale skin, velvet clothes, snowy courtyard view, mysterious winter atmosphere.",
-            "The person as a Dragon Rider soaring through a snowy sky, riding a white dragon, leather flight gear, clouds and mountain peaks, epic fantasy adventure.",
-            "The person as a Barbie/Ken doll in a box labeled 'New Year Edition', plastic texture, perfect smile, pink winter accessories, toy photography style.",
-            "The person as a Renaissance Painting subject (Mona Lisa style), mysterious smile, wearing a festive velvet robe, winter landscape background with faint fireworks, cracked oil paint texture, classic art New Year atmosphere.",
-            "The person wearing a cozy, plush woodland creature costume (like a raccoon or fox) with a hood and ears, sitting in a decorated treehouse, holding a mug of tea, warm Christmas lights, illustration style, Beatrix Potter atmosphere.",
-            "The person as a Video Game character in a pixel art world, 8-bit style, snowy level, health bar full, retro gaming nostalgia atmosphere.",
-            "The person as a Professional Wrestler (Luchador) wearing a festive mask, in a snowy wrestling ring, crowd cheering, dynamic pose, funny and energetic atmosphere.",
-            "The person as a Zen Monk meditating in a snowy garden, orange robes, peaceful expression, levitating slightly, magical spiritual atmosphere.",
-            "The person as a Cybernetic Hacker, typing on holographic keyboards, surrounded by blue screens and servers wrapped in festive tinsel and blinking LED Christmas lights. A small, decorated artificial Christmas tree sits on the desk next to empty energy drink cans. Reflections of neon holiday lights in their augmented reality glasses. High-tech winter city background with digital snow falling. Cyberpunk Christmas atmosphere.",
-
-            // 51-60 (5-Minute Crafts, 123 GO!, Avocado Couple)
-            "The person as a 5-Minute Crafts presenter holding a hot glue gun like a weapon, surrounded by DIY Christmas decorations made of plastic spoons and glitter, bright studio lighting, energetic New Year atmosphere.",
-            "The person mixing a giant bowl of festive red and green slime, wearing a lab coat and goggles, sparkles everywhere, 5-Minute Crafts style, fun and chaotic New Year atmosphere.",
-            "The person fixing a broken Christmas tree with duct tape and a glue gun, looking proud, 'Trust me, I'm an engineer' vibe, 5-Minute Crafts parody style, funny New Year situation.",
-            "The person as a 'Rich Student' in a 123 GO! video, wearing a luxurious gold outfit and sunglasses, holding a stack of cash and gifts, bright school hallway background decorated for Christmas, vivid colors.",
-            "The person hiding inside a giant Christmas present box to prank friends, mischievous expression, 123 GO! style, bright pink and blue colors, funny YouTube thumbnail aesthetic.",
-            "The person participating in a 'Red vs Green' food challenge for New Year, sitting at a table full of red and green festive treats, expressive face, bright YouTube lighting, fun atmosphere.",
-            "The person wearing a funny full-body giant avocado costume and a Santa hat, posing in a bright cartoon living room decorated for Christmas, Avocado Couple channel background style, joyful and silly New Year atmosphere.",
-            "The person wearing a festive ugly Christmas sweater with cute smiling avocados on it, holding a sparkler, bright cartoon winter landscape background, Avocado Couple channel art style, cozy and fun atmosphere.",
-            "The person wearing green avocado-themed pajamas and reindeer antlers, sitting under a cartoon Christmas tree, unwrapping gifts, bright flat cartoon background style, happy New Year vibe.",
-            "The person as a generic bright cartoon character from The Soul Publishing universe, big eyes, expressive face, holding a '2025' sign, colorful background with confetti, joyful New Year atmosphere.",
-
-            // 61 (New Cozy Sweater Prompt)
-            "The person, with the same facial features and hair as the provided image, sitting on the floor with legs crossed, smiling slightly and looking at the camera, holding a string of coiled Christmas lights in one hand and the other hand resting on the floor. Wearing a cream/off-white sweater with a Santa Claus and green/red snowflake pattern, white knitted pants, and red socks. Sitting on a fluffy white rug. In the background, a Christmas tree decorated with red, silver balls, and warm yellow lights, creating a soft glow effect. Cozy lighting, creating a warm and festive Christmas atmosphere.",
-
-            // 62-65 (Bright Side + Cats/Dogs)
-            "The person wearing a funny yellow ugly Christmas sweater with the Bright Side lightbulb logo, holding a fluffy cat wrapped in tinsel, sitting in a cozy armchair by the fireplace, warm cinematic lighting, cute and funny New Year atmosphere.",
-            "The person and their cat both wearing matching festive sweaters (person's sweater has a Bright Side logo), the cat looks grumpy, the person is laughing, snowy window background, cozy home holiday vibe.",
-            "The person wearing a festive sweater with a Bright Side logo, surrounded by three happy Golden Retrievers wearing reindeer antlers, sitting on a rug near a Christmas tree, joyful and chaotic New Year atmosphere.",
-            "The person holding a small puppy in a Santa hat, person wears a knitted sweater with the Bright Side logo and snowflakes, soft bokeh Christmas lights background, adorable and heartwarming holiday atmosphere.",
-
-            // 66-68 (Funny Costumes)
-            "The person wearing a funny, puffy white snowman costume with a red scarf and top hat, standing in a snowy park illuminated by Christmas lights, joyful and playful winter atmosphere.",
-            "The person dressed in a bright yellow lightbulb costume (inspired by the Bright Side mascot), posing with a 'thumbs up', glowing slightly, surrounded by festive confetti and sparkles, energetic and smart New Year atmosphere.",
-            "The person wearing a hilarious crispy fried chicken costume, holding a sparkler, standing against a bright festive background, referencing funny food challenges, humorous and happy New Year atmosphere."
-        ];
-
-        // English titles for the UI (68 VARIANTS)
-        const displayTitles = [
-            // 1-10
-            "Cyberpunk Santa", "Jedi with Sparkler", "Snow Elf", "Business Gingerbread", 
-            "Grinch in Tuxedo", "Ice King/Queen", "Retro 80s Skier", "Hobbit Party", 
-            "Futuristic Robot", "Hogwarts Student",
-            // 11-20
-            "Viking Yule", "Pixar Character", "Marvel Hero", "Noir Detective", 
-            "Winter Aristocrat", "Christmas Minion", "Mars Astronaut", "Forest Spirit", 
-            "Lego Figure", "Christmas Lights Mummy",
-            // 21-30
-            "Cyberpunk Samurai", "Steampunk Inventor", "Gatsby Party Star", "Arctic Explorer",
-            "Disco Legend", "Secret Agent 007", "Fairy Godmother/Father", "Mad Hatter",
-            "Frozen Pirate", "Time Traveler",
-            // 31-40
-            "Greek Deity", "Snowy Sheriff", "Anime Magical Hero", "Deep Sea Diver",
-            "Shining Paladin", "Rock Star", "Master Chef", "Matrix Hero",
-            "Winter Pharaoh", "Alien Diplomat",
-            // 41-50
-            "Claymation Star", "Gothic Vampire", "Dragon Rider", "New Year Doll",
-            "Renaissance Masterpiece", "Cozy Woodland Creature", "8-Bit Hero", "Lucha Libre Star",
-            "Zen Master", "Cyber Hacker",
-            // 51-60
-            "DIY Master with Glue Gun", "Festive Slime Expert", "Ultimate Life Hacker", "Rich Student 123 GO!",
-            "Christmas Prankster", "Red vs Green Challenge", "Avocado Costume Party", "Avocado Ugly Sweater",
-            "Avocado Pajamas", "Soul Pub Cartoon Star",
-            // 61
-            "Cozy Christmas Sweaters",
-            // 62-65
-            "Bright Side Cat & Sweater", "Matching Cat Sweaters", "Bright Side Dog Party", "Bright Side Puppy Love",
-            // 66-68
-            "Funny Snowman", "Bright Side Mascot", "Fried Chicken Party"
-        ];
-
-        // Brand Colors for Confetti
-        const brandColors = ['#6008FA', '#127AFF', '#EE5519', '#00E67B', '#9929EA', '#FD41A7', '#FFFFFF'];
-
-        let isSpinning = false;
-        const resultArea = document.getElementById('result-area');
-        const spinBtn = document.getElementById('spin-btn');
-        const actionButtons = document.getElementById('action-buttons');
-        let currentPromptText = "";
-
-        // --- Logic: Snowflake Generation ---
-        function createSnowflakes() {
-            const container = document.getElementById('snow-container');
-            const snowflakeCount = 40;
-
-            for (let i = 0; i < snowflakeCount; i++) {
-                const flake = document.createElement('i');
-                flake.classList.add('fas', 'fa-snowflake', 'snowflake');
+            const handleCreatePrompt = () => {
+                if (!selectedTemplate) return;
+                const text = userText.trim() || "creative subject";
+                const body = selectedTemplate.body(text);
                 
-                // Randomize properties
-                const size = Math.random() * 12 + 4 + 'px';
-                const left = Math.random() * 100 + 'vw';
-                const duration = Math.random() * 5 + 8 + 's';
-                const delay = Math.random() * 5 + 's';
-                
-                flake.style.fontSize = size;
-                flake.style.left = left;
-                flake.style.animationDuration = duration;
-                flake.style.animationDelay = delay;
-                flake.style.opacity = Math.random() * 0.3 + 0.1; // Fainter snowflakes
-                
-                container.appendChild(flake);
-            }
-        }
-
-        // --- Logic: Confetti ---
-        function fireConfetti() {
-            for(let i=0; i<40; i++) {
-                const conf = document.createElement('div');
-                conf.classList.add('confetti');
-                conf.style.left = Math.random() * 100 + 'vw';
-                // USE BRAND COLORS
-                conf.style.backgroundColor = brandColors[Math.floor(Math.random() * brandColors.length)];
-                
-                // Random shape (sometimes square, sometimes round)
-                if (Math.random() > 0.5) conf.style.borderRadius = '50%';
-                
-                conf.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                document.body.appendChild(conf);
-                
-                setTimeout(() => conf.remove(), 3500);
-            }
-        }
-
-        // --- Logic: Roulette ---
-        function startRoulette() {
-            if (isSpinning) return;
-            isSpinning = true;
-            
-            // UI Update
-            spinBtn.disabled = true;
-            spinBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            
-            // Hide action buttons
-            actionButtons.classList.remove('flex');
-            actionButtons.classList.add('hidden');
-            
-            resultArea.innerHTML = '<span class="text-gray-400">Searching the multiverse...</span>';
-
-            let counter = 0;
-            const maxSpins = 25; 
-            let speed = 40; 
-
-            // Interactive loop
-            const spinInterval = () => {
-                const randomIdx = Math.floor(Math.random() * displayTitles.length);
-                // Use brand colors for spinning text
-                const randomColor = brandColors[Math.floor(Math.random() * (brandColors.length - 1))]; // exclude white mostly
-                
-                resultArea.innerHTML = `
-                    <div style="color: ${randomColor}" class="text-3xl font-bold tracking-tight">
-                        ${displayTitles[randomIdx]}
-                    </div>
-                `;
-                
-                counter++;
-                
-                if (counter < maxSpins) {
-                    speed += 5; // Slow down slightly
-                    setTimeout(spinInterval, speed);
-                } else {
-                    finishSpin();
-                }
+                setPrompts({
+                    gemini: `Use image 1 as an aspect ratio reference\n\n${body}`,
+                    generic: `aspect ratio 3:2\n\n${body}`
+                });
+                setIsInputVisible(false);
             };
 
-            spinInterval();
-        }
+            const copyToClipboard = (text, type) => {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setCopiedType(type);
+                    setTimeout(() => setCopiedType(null), 2000);
+                } catch (err) { console.error("Copy failed", err); }
+                document.body.removeChild(textArea);
+            };
 
-        function finishSpin() {
-            const finalIndex = Math.floor(Math.random() * prompts.length);
-            currentPromptText = prompts[finalIndex];
-            const displayTitle = displayTitles[finalIndex];
+            const reset = () => {
+                setSelectedTemplate(null);
+                setIsInputVisible(false);
+                setUserText('');
+                setPrompts({ gemini: '', generic: '' });
+            };
 
-            // UI Reveal
-            resultArea.innerHTML = `
-                <div class="animate-bounce mb-3 text-4xl">🎁</div>
-                <div class="text-[#127AFF] text-xs font-bold uppercase tracking-widest mb-2">Your Persona:</div>
-                <div class="font-bold text-3xl md:text-4xl text-white mb-2 leading-tight uppercase brand-gradient-text drop-shadow-lg">
-                    ${displayTitle}
+            return (
+                <div className="p-4 md:p-8 max-w-6xl mx-auto pb-24 animate-fade-in">
+                    <header className="mb-12 text-center flex flex-col items-center">
+                        <div className="flex items-center justify-center gap-4">
+                            <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-sky-400 to-indigo-500 bg-clip-text text-transparent tracking-tighter">
+                                Prompt Architect
+                            </h1>
+                            <button onClick={reset} className="text-slate-500 hover:text-white transition-all p-2 rounded-full hover:bg-white/10 active:scale-90">
+                                <Icons.Refresh />
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Сетка шаблонов */}
+                    {!prompts.gemini && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 mb-12">
+                            {templates.map(t => (
+                                <button 
+                                    key={t.id} 
+                                    onClick={() => { setSelectedTemplate(t); setIsInputVisible(false); }}
+                                    className={`group relative aspect-card rounded-[2rem] md:rounded-[3rem] overflow-hidden border-2 transition-all duration-500 card-shadow ${
+                                        selectedTemplate?.id === t.id 
+                                        ? 'border-sky-500 ring-8 ring-sky-500/10 scale-[1.03]' 
+                                        : 'border-slate-800 hover:border-slate-600 hover:scale-[1.01]'
+                                    }`}
+                                >
+                                    <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
+                                        {t.image && !failedImages[t.id] ? (
+                                            <img 
+                                                src={t.image} 
+                                                className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-700"
+                                                onError={() => setFailedImages(prev => ({...prev, [t.id]: true}))}
+                                            />
+                                        ) : (
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="w-0 h-0 border-l-[30px] border-l-transparent border-r-[30px] border-r-transparent border-bottom-[50px] opacity-30" style={{ borderBottomColor: t.color }} />
+                                                <span className="text-[10px] text-slate-700 font-black tracking-widest uppercase">No Image</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="absolute bottom-0 inset-x-0 p-3 md:p-5 bg-slate-950/90 backdrop-blur-md text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] text-center border-t border-white/5 transition-all group-hover:bg-slate-900">
+                                        {t.name}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Секция ввода */}
+                    {!prompts.gemini && (
+                        <div className="flex flex-col items-center gap-8 min-h-[160px]">
+                            {selectedTemplate && !isInputVisible && (
+                                <button 
+                                    onClick={() => setIsInputVisible(true)} 
+                                    className="group flex items-center gap-4 px-12 py-6 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-full font-black text-xl transition-all shadow-2xl shadow-sky-500/30 active:scale-95"
+                                >
+                                    <Icons.Type />
+                                    ADD PREVIEW TEXT
+                                </button>
+                            )}
+                            {isInputVisible && (
+                                <div className="w-full max-w-2xl space-y-5 animate-fade-in">
+                                    <input 
+                                        type="text" 
+                                        value={userText} 
+                                        onChange={(e) => setUserText(e.target.value)} 
+                                        onKeyPress={(e) => e.key === 'Enter' && handleCreatePrompt()}
+                                        placeholder={`Describe subject for "${selectedTemplate.name}"...`}
+                                        className="w-full bg-slate-900/80 border-2 border-slate-700 rounded-[2rem] px-10 py-7 focus:border-sky-500 outline-none text-2xl transition-all shadow-inner placeholder:text-slate-600 text-center" 
+                                        autoFocus 
+                                    />
+                                    <button 
+                                        onClick={handleCreatePrompt} 
+                                        className="w-full bg-indigo-600 py-6 rounded-2xl font-black text-xl uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-xl flex items-center justify-center gap-4 active:scale-95"
+                                    >
+                                        <Icons.Wand />
+                                        Create Prompt
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Результаты */}
+                    {prompts.gemini && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in mt-4">
+                            <PromptBox 
+                                title="For Gemini" 
+                                icon={<Icons.Sparkles />} 
+                                color="sky" 
+                                value={prompts.gemini} 
+                                onChange={(v) => setPrompts(p => ({...p, gemini: v}))} 
+                                onCopy={() => copyToClipboard(prompts.gemini, 'gemini')} 
+                                isCopied={copiedType === 'gemini'} 
+                                link="https://gemini.google.com/"
+                                showTips={true}
+                            />
+                            <PromptBox 
+                                title="For ChatGPT" 
+                                icon={<Icons.Message />} 
+                                color="emerald" 
+                                value={prompts.generic} 
+                                onChange={(v) => setPrompts(p => ({...p, generic: v}))} 
+                                onCopy={() => copyToClipboard(prompts.generic, 'generic')} 
+                                isCopied={copiedType === 'generic'} 
+                                link="https://chatgpt.com/" 
+                            />
+                            <div className="md:col-span-2 flex justify-center mt-4">
+                                <button onClick={reset} className="flex items-center gap-2 text-slate-500 hover:text-white font-bold uppercase text-xs tracking-widest transition-all">
+                                    <Icons.Refresh /> Start Over
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            `;
+            );
+        };
 
-            fireConfetti();
-            
-            // Reset buttons
-            isSpinning = false;
-            spinBtn.disabled = false;
-            spinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            spinBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Try Again';
-            
-            // Show action buttons
-            actionButtons.classList.remove('hidden');
-            actionButtons.classList.add('flex', 'animate-pulse');
-            setTimeout(() => actionButtons.classList.remove('animate-pulse'), 1000);
-        }
+        const PromptBox = ({ title, icon, color, value, onChange, onCopy, isCopied, link, showTips }) => (
+            <div className="bg-slate-900/60 backdrop-blur-3xl border border-slate-800 rounded-[3rem] p-8 md:p-10 relative flex flex-col shadow-2xl overflow-hidden">
+                <div className={`absolute top-0 left-0 w-full h-2 ${color === 'sky' ? 'bg-sky-500' : 'bg-emerald-500'}`}></div>
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center gap-4">
+                        <span className={color === 'sky' ? 'text-sky-400' : 'text-emerald-400'}>{icon}</span>
+                        <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">{title}</span>
+                    </div>
+                    <button 
+                        onClick={onCopy} 
+                        className={`flex items-center gap-3 px-6 py-3 rounded-full font-black text-xs transition-all shadow-xl ${
+                            isCopied ? 'bg-emerald-500 text-slate-950 scale-105' : 'bg-white text-slate-950 hover:bg-sky-400 active:scale-95'
+                        }`}
+                    >
+                        {isCopied ? <Icons.Check /> : <Icons.Copy />}
+                        {isCopied ? 'COPIED!' : 'COPY'}
+                    </button>
+                </div>
+                <textarea 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)} 
+                    className="w-full h-80 bg-slate-950/80 rounded-3xl p-7 text-slate-300 font-mono text-sm leading-relaxed resize-none outline-none focus:ring-2 focus:ring-white/5 custom-scrollbar shadow-inner" 
+                />
+                
+                {showTips && (
+                    <div className="mt-6 bg-sky-500/5 border border-sky-500/20 rounded-2xl p-4 space-y-4">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 text-sky-400"><Icons.Info /></div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                                <span className="text-sky-400 font-bold uppercase tracking-wider block mb-1">Step 1: Use Corporate Account</span>
+                                Sign in with your corporate <span className="text-white">@id.thesoul.io</span> account to access the necessary enterprise features.
+                            </p>
+                        </div>
+                        <div className="flex items-start gap-3 border-t border-sky-500/10 pt-3">
+                            <div className="mt-1 text-sky-400"><Icons.Info /></div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                                <span className="text-sky-400 font-bold uppercase tracking-wider block mb-1">Step 2: Select Pro Model</span>
+                                Choose the <span className="text-white">"Pro"</span> model from the dropdown list located next to the microphone icon.
+                            </p>
+                        </div>
+                        <div className="flex items-start gap-3 border-t border-sky-500/10 pt-3">
+                            <div className="mt-1 text-sky-400"><Icons.Info /></div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                                <span className="text-sky-400 font-bold uppercase tracking-wider block mb-1">Step 3: Upload Reference</span>
+                                Upload a white rectangle matching the preview dimensions. This serves as an aspect ratio reference (already included in your prompt) for correct output size.
+                            </p>
+                        </div>
+                        <div className="flex items-start gap-3 border-t border-sky-500/10 pt-3">
+                            <div className="mt-1 text-sky-400"><Icons.Info /></div>
+                            <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                                <span className="text-sky-400 font-bold uppercase tracking-wider block mb-1">Step 4: Save Full Resolution</span>
+                                Always download images using the arrow icon in the upper right corner to save them in their original full size.
+                            </p>
+                        </div>
+                    </div>
+                )}
 
-        // --- Logic: Copy to Clipboard ---
-        function copyPrompt() {
-            if (!currentPromptText) return;
+                <a 
+                    href={link} 
+                    target="_blank" 
+                    className="mt-8 py-5 bg-slate-800/50 hover:bg-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-center border border-slate-700 transition-all hover:border-white/20 flex items-center justify-center gap-3"
+                >
+                    OPEN {title.split(' ')[1].toUpperCase()} <Icons.External />
+                </a>
+            </div>
+        );
 
-            const textArea = document.createElement("textarea");
-            textArea.value = currentPromptText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                showToast();
-            } catch (err) {
-                console.error('Fallback: Oops, unable to copy', err);
-                alert("Could not copy automatically. Please copy the text manually.");
-            }
-            
-            document.body.removeChild(textArea);
-        }
-
-        function showToast() {
-            const toast = document.getElementById('toast');
-            toast.style.opacity = '1';
-            toast.style.transform = 'translate(-50%, 0)';
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, 20px)';
-            }, 2000);
-        }
-
-        // Init
-        createSnowflakes();
-
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
